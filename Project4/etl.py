@@ -33,7 +33,7 @@ def create_spark_session():
 def process_song_data(spark, input_data, output_data):
     # get filepath to song data file
     # song_data = os.path.join("s3a://udacity-dend/song_data/A/A/A/*.json")
-    song_data = "s3a://udacity-dend/song_data/*/*/*/*.json"
+    song_data = os.path.join(input_data, 'song_data', '*', '*', '*', '*.json')
 
     # read song data file
     df_songs = spark.read.json(song_data)
@@ -42,7 +42,11 @@ def process_song_data(spark, input_data, output_data):
     df_songs.createOrReplaceTempView("songs_table_DF")
     songs_table = spark.sql("""
                             SELECT
-                            song_id, title, artist_id, year, duration, artist_name
+                            song_id, 
+                            title, 
+                            artist_id, 
+                            year, 
+                            duration
                             FROM
                             songs_table_DF
                             ORDER BY song_id
@@ -56,7 +60,11 @@ def process_song_data(spark, input_data, output_data):
     df_songs.createOrReplaceTempView("artists_table_DF")
     artists_table = spark.sql("""
                             SELECT
-                            artist_id, artist_name, artist_location, artist_latitude, artist_longitude
+                            artist_id, 
+                            artist_name AS name, 
+                            artist_location AS location, 
+                            artist_latitude AS latitude, 
+                            artist_longitude AS longitude
                             FROM
                             artists_table_DF
                             WHERE
@@ -69,7 +77,7 @@ def process_song_data(spark, input_data, output_data):
 
 def process_log_data(spark, input_data, output_data):
     # get filepath to log data file
-    log_data = "s3a://udacity-dend/log_data/*/*/*.json"
+    log_data = os.path.join(input_data, 'log_data', '*', '*', '*.json')
 
     # read log data file
     df_logs = spark.read.json(log_data)
@@ -81,11 +89,15 @@ def process_log_data(spark, input_data, output_data):
     df_logs.createOrReplaceTempView('users_table_DF')
     users_table = spark.sql("""
                             SELECT
-                            userId, firstName, lastName, gender, level
+                            userId AS user_id, 
+                            firstName AS first_name, 
+                            lastName AS last_name, 
+                            gender, 
+                            level
                             FROM
                             users_table_DF
                             WHERE
-                            userId IS NOT NULL
+                            user_id IS NOT NULL
                             """)
 
     # write users table to parquet files
