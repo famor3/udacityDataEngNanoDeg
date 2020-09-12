@@ -121,9 +121,9 @@ def process_log_data(spark, input_data, output_data):
 
     # extract columns from joined song and log datasets to create songplays table
     songplays_table = df_logs.join(song_df,
-              (song_df.artist_name == df_logs.artist) &
-              (song_df.title == df_logs.song) &
-              (song_df.duration == df_logs.length), how='left_outer')\
+                                   (song_df.artist_name == df_logs.artist) &
+                                   (song_df.title == df_logs.song) &
+                                   (song_df.duration == df_logs.length), how='left_outer')\
         .withColumn('year', year('start_time'))\
         .withColumn('month', month('start_time'))\
         .select('start_time',
@@ -135,18 +135,18 @@ def process_log_data(spark, input_data, output_data):
                 'location',
                 df_logs.userAgent.alias('user_agent'),
                 'year',
-                'month'
+                'month')\
         .withColumn('songplay_id', F.monotonically_increasing_id())
 
     # write songplays table to parquet files partitioned by year and month
-    songplays_table.write.mode('overwrite').partitionBy(
-        'year', 'month').parquet(output_data+'songplays_table/')
+    songplays_table.write.partitionBy(
+        'year', 'month').parquet(output_data+'songplays_table/', mode="overwrite")
 
 
 def main():
-    spark=create_spark_session()
-    input_data="s3a://udacity-dend/"
-    output_data="s3a://sparkify-lake/"
+    spark = create_spark_session()
+    input_data = "s3a://udacity-dend/"
+    output_data = "s3a://sparkify-lake/"
 
     process_song_data(spark, input_data, output_data)
     process_log_data(spark, input_data, output_data)
