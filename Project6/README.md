@@ -74,6 +74,10 @@ change_type, rcp_type, hosp_ccn, noncov_rcp_name, teach_hosp_id, teach_hosp_name
 
 ```etl.py``` -> used to process data into analytic tables in Redshift
 
+```RedshiftQueries.ipynb``` -> Jupyter Notebook for summary queries
+
+```ValidateDataRedshift.ipynb``` -> Jupyter Notebook for data validations
+
 ## **Environment**
 ---
 Python 3.8 or above
@@ -140,7 +144,41 @@ python create_tables.py
 python etl.py
 ```
 
+
+## **Data Quality Checks**
+---
+- Integrity constraints on the relational db (data types)
+    - Data types were defined in the code to create all tables in Redshift. If a field failed during execution, adjustments were made to the data types, tables dropped and code re-run.
+- Source/Count checks to ensure completeness
+    - See ```ValidateDataRedshift.ipynb``` Jupyter notebook for data checks.
+
+
+## **Logical Approach**
+---
+- Should the data increase by 100x, Redshift would be able to handle the storage with minor configuration modifications. In it's current configuration, the cluster is a dc2.large node type which has a max storage of 160GB and 1 node, but can handle up to 2 Petabytes, if needed, with modification to the cluster.
+
+- CMS does not publish its data in intervals smaller than yearly, so it this particular case, daily, weekly or monthly pipelines would not be run, as this would cause unnecessary traffic on this cluster. However, if, theoretically, there was a need to run pipelines on a daily basis by 7am every day, Airflow could be used to schedule DAGs to pull in new data. Because reporting does not happen on a daily basis, if a DAG were to fail to run, a dashboard could continue showing last day data.
+
+- Should the database need to be accessed by more than 100 people, Redshift is perfectly capable of handling the traffic with some minor configuration tweaks. It can handle 500 maximum connections, which it could handle without issue.
+
+
+## **Choice of tools, technologies and data model**
+---
+1. Description of data model
+    - There are three tables which focus on the CMS data, physician information data, payment information data and payment research data.
+2. Why chose data model
+    - This is the most straightforward and simplest way to present the data for running the analytics needed. There is much information from the original data file but, as stated in the summary, the scope of the data for this project was narrowed to eliminate unnecessary data fields.
+3. What kind of queries do we want to explore?
+    1. Top 10 providers receiving payments
+    2. Top 10 Manufacturers making payments or investments to providers
+    3. Top 10 NDC codes associated with provider payments/investments
+4. Use cases the data is being prepared for
+    - The scope of this data is narrowed and its use would be for public and private entities that want to know if a provider or hospital is receiving compensation from a device or pharmaceutical manufacturer and how much they are receiving.
+    - It would also show how much money or other investment a manufacturer has paid out for the reporting year.
+
+
 ## **Findings**
+---
 Using Jupyter Notebook and Redshift queries (to verify totals) I found the following:
 Top 10 providers receiving payments
 
