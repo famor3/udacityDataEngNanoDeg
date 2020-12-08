@@ -3,7 +3,7 @@
 
 ## **Overview**
 ---
-This project is based on the Open Payments program, managed by the Ceneters for Medicare & Medicaid Services. According to their
+This project is based on the Open Payments program, managed by the Centers for Medicare & Medicaid Services. According to their
 documentation, the program "promotes transparency and accountability by helping consumers understand the financial relationships between pharmaceutical and medical device industries, and physicians and teaching hospitals". This project is meant to narrow the scope of finding physicians and services or products. The General payment dataset for a single year is more than 10 million lines and more than 70 columns.
 
 ## **Project Datasets**
